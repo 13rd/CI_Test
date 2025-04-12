@@ -21,4 +21,22 @@ jobs:
         pip install -r requirements.txt
 
     - name: Run tests
-      run: pytest --rootdir=
+      run: pytest --rootdir
+
+    - name: Build and test Docker image
+      run: |
+        docker build -t ci-test-app .
+        
+        docker run -d -p 5000:5000 --name ci-test-container ci-test-app
+        
+        sleep 5
+        
+        response=$(curl -s http://localhost:5000/hello)
+        
+        if [[ "$response" != *"Hello, World!"* ]]; then
+          echo "Endpoint test failed: Unexpected response"
+          exit 1
+        fi
+        
+        docker stop ci-test-container
+        docker rm ci-test-container

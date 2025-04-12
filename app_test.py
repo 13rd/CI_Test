@@ -11,3 +11,6 @@ def test_hello(client):
     response = client.get('/hello')
     assert response.status_code == 200
     assert response.data == b'Hello, World!'
+
+def test_true():
+    assert 1 == 1
